@@ -739,7 +739,7 @@
         });
         }
 
-        // ACTUALIZACIÓN: Sistema procedural de cuerpo humanoide REPARADO (Pies en el suelo y Cabeza distinguible)
+      
         function createRemotePlayer(id) {
         if (remotePlayers[id] || !scene) return;
         const rp = new THREE.Group();
@@ -747,11 +747,11 @@
         const colors = [0xff4655, 0x00ccff, 0x00ffcc, 0xffcc00, 0xcc00ff, 0xffffff];
         const pColor = colors[Object.keys(remotePlayers).length % colors.length];
 
-        // Material para el cuerpo y material diferenciado para la cabeza
+       
         const mat = new THREE.MeshStandardMaterial({ color: pColor, roughness: 0.5 });
-        const headMat = new THREE.MeshStandardMaterial({ color: 0xffe0c2, roughness: 0.5 }); // Color "piel" claro para resaltar
+        const headMat = new THREE.MeshStandardMaterial({ color: 0xffe0c2, roughness: 0.5 }); 
 
-        // Cabeza (Ahora distintiva y a la altura exacta de la cámara: y=0 relativo a rp)
+  
         const head = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.35), headMat);
         head.position.y = 0;
         const visor = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.1, 0.1), new THREE.MeshStandardMaterial({ color: 0x000 }));
@@ -759,12 +759,11 @@
         head.add(visor);
         rp.add(head);
 
-        // Torso (Bajado para conectar con la cabeza y piernas)
         const torso = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.3), mat);
         torso.position.y = -0.55; // El centro del torso
         rp.add(torso);
 
-        // Función creadora de extremidades (Punto de rotación arriba en la articulación)
+        
         function createLimb(w, h, d, yOffset) {
         const group = new THREE.Group();
         const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -773,9 +772,6 @@
         return group;
         }
 
-        // Piernas (Articuladas desde la cadera en y = -0.9)
-        // La cámara está a 1.6, la cadera a -0.9 significa que la cadera global está a 0.7
-        // La pierna mide 0.7 de largo, por lo que llega exactamente a y = 0.0 (El suelo)
         const leftLeg = createLimb(0.2, 0.7, 0.2, -0.35);
         leftLeg.position.set(-0.15, -0.9, 0);
         rp.add(leftLeg);
@@ -784,7 +780,7 @@
         rightLeg.position.set(0.15, -0.9, 0);
         rp.add(rightLeg);
 
-        // Brazos (Articulados desde el hombro)
+       
         const leftArm = createLimb(0.15, 0.7, 0.15, -0.35);
         leftArm.position.set(-0.35, -0.25, 0);
         rp.add(leftArm);
@@ -793,13 +789,13 @@
         rightArm.position.set(0.35, -0.25, 0);
         rp.add(rightArm);
 
-        // Arma equipada visual en el brazo derecho
+       
         const weaponMat = new THREE.MeshStandardMaterial({color: 0x333333});
         const weaponMesh = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.6), weaponMat);
         weaponMesh.position.set(0, -0.4, -0.2); // Sostenida hacia adelante
         rightArm.add(weaponMesh);
 
-        // Data interna del modelo para las animaciones
+      
         rp.userData = {
         leftLeg, rightLeg, leftArm, rightArm, weaponMesh,
         walkTime: 0, isMoving: false, isSprinting: false,
@@ -1030,7 +1026,7 @@
         function showDamage(amount, isHeadshot, target) {
         if(!target) return;
         const vector = target.position.clone();
-        vector.y += 0.5; // Ajustado para que el popup salga cerca de la cabeza real
+        vector.y += 0.5; 
         vector.project(camera);
         const x = (vector.x * .5 + .5) * window.innerWidth;
         const y = (vector.y * -.5 + .5) * window.innerHeight;
@@ -1063,7 +1059,7 @@
         scene.add(bullet);
         bullets.push(bullet);
 
-        // ACTUALIZACIÓN: Lógica de detección de impacto (Cuerpo vs Cabeza mejorada)
+      
         if(!isRemote && Object.keys(remotePlayers).length > 0 && !isFlash && gameMode !== 'aim') {
         const stats = weaponStats[weaponType];
 
@@ -1072,21 +1068,21 @@
         let isHeadshot = false;
 
         for(let id in remotePlayers) {
-        let rpRootPos = remotePlayers[id].position; // Posición raíz del jugador (coincide con la cabeza en nuestro nuevo modelo, Y=1.6)
+        let rpRootPos = remotePlayers[id].position; 
 
-        // Hitbox Cabeza (esfera pequeña alrededor de la posición origen)
+        
         let headDist = bullet.position.distanceTo(rpRootPos);
 
-        // Hitbox Cuerpo (esfera más grande más abajo)
+       
         let bodyCenter = rpRootPos.clone();
-        bodyCenter.y -= 0.6; // Centro aproximado del torso
+        bodyCenter.y -= 0.6; 
         let bodyDist = bullet.position.distanceTo(bodyCenter);
 
-        if(headDist < 0.35) { // Impacto en la cabeza
+        if(headDist < 0.35) { 
         hitId = id;
         isHeadshot = true;
         break;
-        } else if(bodyDist < 0.8) { // Impacto en el cuerpo
+        } else if(bodyDist < 0.8) { 
         hitId = id;
         isHeadshot = false;
         break;
@@ -1339,7 +1335,7 @@
         }
         });
 
-        // ACTUALIZACIÓN: Lógica de animaciones para correr/caminar en los muñecos adaptada al nuevo esqueleto
+       
         for (let id in remotePlayers) {
         let rp = remotePlayers[id];
         if (rp.userData.isMoving) {
@@ -1347,23 +1343,21 @@
         rp.userData.walkTime += delta * moveSpeed;
         let wt = rp.userData.walkTime;
 
-        // Mover piernas y brazo izquierdo
         rp.userData.leftLeg.rotation.x = Math.sin(wt) * 0.6;
         rp.userData.rightLeg.rotation.x = Math.sin(wt + Math.PI) * 0.6;
         rp.userData.leftArm.rotation.x = Math.sin(wt + Math.PI) * 0.5;
-        // El brazo derecho apunta con el arma hacia adelante un poco movido por el paso
         rp.userData.rightArm.rotation.x = Math.sin(wt) * 0.05;
         } else {
-        // Posición de reposo
+            
         rp.userData.leftLeg.rotation.x = 0;
         rp.userData.rightLeg.rotation.x = 0;
         rp.userData.leftArm.rotation.x = 0;
-        // El brazo derecho mantiene el arma apuntando al frente
+  
         rp.userData.rightArm.rotation.x = 0;
         }
         }
 
-        // Enviamos también el arma actual y si corremos a los demás
+    
         if (Object.keys(connections).length > 0) {
         broadcast({
         type: 'move',
@@ -1375,7 +1369,7 @@
         }
 
         renderer.render(scene, camera);
-        // Revertir shake de cámara para que vuelva a la normalidad en el siguiente frame
+ 
         if (shakeRotX !== 0) camera.rotation.x -= shakeRotX;
         if (shakeRotZ !== 0) camera.rotation.z -= shakeRotZ;
         }
